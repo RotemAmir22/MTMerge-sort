@@ -1,16 +1,23 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 public class MTMergeSort
 {
     static void Main(string[] args)
     {
-        string[] arr = { "3", "5", "1", "7", "4", "9", "8", "6", "2" };
+        
+        string[] arr = { "a", "k", "r", "b", "s", "v", "c", "w", "z" };
         MTMergeSort mTMergeSort = new MTMergeSort();
-        List<string> ans = mTMergeSort.MergeSort(arr);
+        List<string> ans = mTMergeSort.MergeSort(arr,5);
         if (ans == null)
             Console.WriteLine("No list");
         else
-            Console.WriteLine(string.Join(",", ans));
+        {
+            string result = string.Join(", ", ans);
+            Console.WriteLine(result);
+        }
+            
+        Console.ReadLine();
     }
 
 
@@ -29,22 +36,54 @@ public class MTMergeSort
         string[] right = new string[strList.Length - mid];
         Array.Copy(strList, 0, left, 0, mid);
         Array.Copy(strList, mid, right, 0, strList.Length - mid);
-
+        
+              
         // create threads to sort each sub-array
-        Thread leftThread = new Thread(() => MergeSort(left));
-        Thread rightThread = new Thread(() => MergeSort(right));
+        Thread leftThread = new Thread(() => run(left, nMin));
+        Thread rightThread = new Thread(() => run(right, nMin));
 
         // start threads and wait for them to complete
         leftThread.Start();
         rightThread.Start();
         leftThread.Join();
         rightThread.Join();
-       
-        return null;
+        
+        return MergeSortNoThread(strList, 0, strList.Length - 1).ToList();
         
     }
 
-    public string[] MergeSortNoThread(string[] strList,int l, int r)
+    //need to use a static function for threads
+    public static List<string> run(string[] strList, int nMin = 2)
+    {
+        if (strList.Length < nMin)
+        {
+            List<string> list = MergeSortNoThread(strList, 0, strList.Length - 1).ToList();
+            return list;
+        }
+
+        int mid = strList.Length / 2;
+
+        // create left and right sub-arrays
+        string[] left = new string[mid];
+        string[] right = new string[strList.Length - mid];
+        Array.Copy(strList, 0, left, 0, mid);
+        Array.Copy(strList, mid, right, 0, strList.Length - mid);
+
+        // create threads to sort each sub-array
+        Thread leftThread = new Thread(() => run(left, nMin));
+        Thread rightThread = new Thread(() => run(right, nMin));
+
+        // start threads and wait for them to complete
+        leftThread.Start();
+        rightThread.Start();
+        leftThread.Join();
+        rightThread.Join();
+
+        return MergeSortNoThread(strList, 0, strList.Length - 1).ToList();
+    }
+
+    //without thread- minimum division
+    public static string[] MergeSortNoThread(string[] strList,int l, int r)
     {
          if (l < r) 
          {
@@ -64,7 +103,8 @@ public class MTMergeSort
         return strList;
     }
 
-    public void Merge(string[] arr, int l, int m, int r) 
+    //merge the arrays
+    public static void Merge(string[] arr, int l, int m, int r) 
     {
         // Find sizes of two
         // subarrays to be merged
@@ -93,7 +133,7 @@ public class MTMergeSort
         // subarray array
         int k = l;
         while (i < n1 && j < n2) {
-            if (int.Parse(L[i]) <= int.Parse(R[j])) {
+            if (string.Compare(L[i], R[j]) <= 0) {
                 arr[k] = L[i];
                 i++;
             }
