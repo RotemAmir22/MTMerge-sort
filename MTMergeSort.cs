@@ -1,34 +1,23 @@
 ﻿using System;
 using System.Threading;
 
+
 public class MTMergeSort
 {
-    static void Main(string[] args)
-    {
-        
-        string[] arr = { "a", "k", "r", "b", "s", "v", "c", "w", "z" };
-        MTMergeSort mTMergeSort = new MTMergeSort();
-        List<string> ans = mTMergeSort.MergeSort(arr,5);
-        if (ans == null)
-            Console.WriteLine("No list");
-        else
-        {
-            string result = string.Join(", ", ans);
-            Console.WriteLine(result);
-        }
-            
-        Console.ReadLine();
-    }
-
-
+    /*
+    * Merge-sort algorithm: workes by the "divide and conquer" approach to sort an array of elements.
+    * In this implement - we got an array of string, and a nMin value to sort the subarray. 
+    * The use of threads makes the runtime faster. 
+    */
     public List<string> MergeSort(string[] strList, int nMin = 2)
     {
+        // if true than go sort
         if (strList.Length < nMin) 
         {
             List<string> list = MergeSortNoThread(strList,0,strList.Length-1).ToList();
             return list;
         }
-
+        // calculate mid to divide the array
         int mid = strList.Length / 2;
 
         // create left and right sub-arrays
@@ -36,8 +25,7 @@ public class MTMergeSort
         string[] right = new string[strList.Length - mid];
         Array.Copy(strList, 0, left, 0, mid);
         Array.Copy(strList, mid, right, 0, strList.Length - mid);
-        
-              
+         
         // create threads to sort each sub-array
         Thread leftThread = new Thread(() => run(left, nMin));
         Thread rightThread = new Thread(() => run(right, nMin));
@@ -52,7 +40,7 @@ public class MTMergeSort
         
     }
 
-    //need to use a static function for threads
+    //need to use a static function for threads that's why the duplicated code
     public static List<string> run(string[] strList, int nMin = 2)
     {
         if (strList.Length < nMin)
@@ -82,7 +70,7 @@ public class MTMergeSort
         return MergeSortNoThread(strList, 0, strList.Length - 1).ToList();
     }
 
-    //without thread- minimum division
+    //Recursive function to sort without thread - minimum division
     public static string[] MergeSortNoThread(string[] strList,int l, int r)
     {
          if (l < r) 
@@ -122,15 +110,11 @@ public class MTMergeSort
         for (j = 0; j < n2; ++j)
             R[j] = arr[m + 1 + j];
  
-        // Merge the temp arrays
- 
-        // Initial indexes of first
-        // and second subarrays
+        // Initial indexes of first and second subarrays
         i = 0;
         j = 0;
  
-        // Initial index of merged
-        // subarray array
+        // Initial index of merged subarray array
         int k = l;
         while (i < n1 && j < n2) {
             if (string.Compare(L[i], R[j]) <= 0) {
@@ -143,17 +127,15 @@ public class MTMergeSort
             }
             k++;
         }
- 
-        // Copy remaining elements
-        // of L[] if any
+
+        // Copy remaining elements of L[] if any
         while (i < n1) {
             arr[k] = L[i];
             i++;
             k++;
         }
  
-        // Copy remaining elements
-        // of R[] if any
+        // Copy remaining elements of R[] if any
         while (j < n2) {
             arr[k] = R[j];
             j++;
